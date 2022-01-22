@@ -38,8 +38,8 @@ no |Name                           |Notes   |Interface|Pins/Address
  6 |Light Sensor                   |        |Analog   |A6
  7 |Sound Sensor                   |        |Analog   |A2
  8 |Temperature and humidity sensor|DHT11   |Digital  |D3
- 9 |3-Axis Accelerometer           |LIS3DHTR|I2C      |0x77, 0x76
-10 |Air Pressure sensor            |BMP280  |I2C      |0x19
+ 9 |3-Axis Accelerometer           |LIS3DHTR|I2C      |0x19, 0x18
+10 |Air Pressure sensor            |BMP280  |I2C      |0x77, 0x76
 
 ## Documentation
 
