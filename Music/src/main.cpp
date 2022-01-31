@@ -77,6 +77,7 @@ int ledpin = 4;
 
 void setup()
 {
+  Serial.begin(115200);
   pinMode(tonepin, OUTPUT);
   pinMode(ledpin, OUTPUT);
   length = sizeof(tune) / sizeof(tune[0]);
@@ -100,6 +101,7 @@ void loop()
   for (int x = 0; x < length; x++)
   {
     tone(tonepin, tune[x]);
+    Serial.println(tune[x]);
     delay(400 * durt[x]);
     delay(100 * durt[x]);
     noTone(tonepin);
