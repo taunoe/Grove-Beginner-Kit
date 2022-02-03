@@ -7,10 +7,12 @@ Build GUI Apps with Python and GTK: https://www.youtube.com/watch?v=Ko0NTS0IpfI
 https://pygobject.readthedocs.io/en/latest/
 https://python-gtk-3-tutorial.readthedocs.io/en/latest/
 http://lazka.github.io/pgi-docs/
+https://matplotlib.org/3.1.3/tutorials/introductory/customizing.html
 """
 
 from urllib import response
 import gi
+from gi.repository import Gio
 import sys
 import pandas as pd
 from matplotlib.backends.backend_gtk3agg import FigureCanvasGTK3Agg
@@ -27,11 +29,44 @@ class MyApp:
       self.df = None
 
       self.builder = Gtk.Builder()
-      self.builder.add_from_file("uus.glade")  # Glade file
+      self.builder.add_from_file("window.glade")  # Glade file
       self.builder.connect_signals(self)
 
       self.window = self.builder.get_object("JuunWindow") #GtkApplicationWindow name
       self.window.show_all()
+
+      ## Menu
+      # https://github.com/alexhuntley/Plots/blob/main/plots/plots.py
+      menu_button = self.builder.get_object("menu_btn")
+      self.menu = Gio.Menu()
+      self.menu.append("Help", "app.help")
+      self.menu.append("About Plots", "app.about")
+      menu_button.set_menu_model(self.menu)
+
+      #print(self.get_style_context().get_color())
+      #print(self.get_style_context().get_border_color())
+      #print(self.get_style_context().get_background_color())
+
+      #####
+      # Create an empty style context
+      style_ctx = Gtk.StyleContext()
+      # Create an empty widget path
+      widget_path =  Gtk.WidgetPath()
+      # Specify the widget class type you want to get colors from
+      widget_path.append_type(Gtk.Button)
+      style_ctx.set_path(widget_path)
+      # Print style context colors of widget class Gtk.Button
+      print('Gtk.Button: Normal:')
+      print('foreground color: ', style_ctx.get_color(Gtk.StateFlags.NORMAL) )
+      print('color:            ', style_ctx.get_property('color', Gtk.StateFlags.NORMAL) )
+      print('background color: ', style_ctx.get_property('background-color', Gtk.StateFlags.NORMAL) )
+      print('outline color:    ', style_ctx.get_property('outline-color', Gtk.StateFlags.NORMAL) )
+      print('Gtk.Button: Link:')
+      print('foreground color: ', style_ctx.get_color(Gtk.StateFlags.LINK) )
+      print('color:            ', style_ctx.get_property('color', Gtk.StateFlags.LINK) )
+      print('background color: ', style_ctx.get_property('background-color', Gtk.StateFlags.LINK) )
+      print('outline color:    ', style_ctx.get_property('outline-color', Gtk.StateFlags.LINK) )
+      ####
 
 
   def load_table(self, filename):
@@ -50,11 +85,11 @@ class MyApp:
 
   def menu_btn_pressed(self, widget):
     print("menu_btn_pressed")
-
+    # https://stackoverflow.com/questions/31012645/properly-structure-and-highlight-a-gtkpopovermenu-using-pygobject
 
   def on_open_dialog(self, widget):
     dialog = self.builder.get_object("open_file_dialog")
-    response = dialog.run
+    response = dialog.run()
     if response == Gtk.ResponseType.OK:
       print("ok btn")
       filename = dialog.get_filename()
@@ -81,14 +116,32 @@ class MyApp:
     print("on_plot")
     if self.df is None:
       return
+
     canvas_window = self.builder.get_object("plot1")
+    # print(plt.style.available)
+    # ['Solarize_Light2', '_classic_test_patch', 'bmh', 'classic', 'dark_background',
+    # 'fast', 'fivethirtyeight', 'ggplot', 'grayscale', 'seaborn', 'seaborn-bright',
+    # 'seaborn-colorblind', 'seaborn-dark', 'seaborn-dark-palette', 'seaborn-darkgrid',
+    # 'seaborn-deep', 'seaborn-muted', 'seaborn-notebook', 'seaborn-paper', 'seaborn-pastel',
+    # 'seaborn-poster', 'seaborn-talk', 'seaborn-ticks', 'seaborn-white', 'seaborn-whitegrid',
+    # 'tableau-colorblind10']
+    # Themes:
+    # https://github.com/quantumblacklabs/qbstyles
+    # https://pypi.org/project/ing-theme-matplotlib/
+    # https://github.com/dhaitz/mplcyberpunk
+
+    plt.style.use('seaborn-dark')
+    for param in ['figure.facecolor', 'axes.facecolor', 'savefig.facecolor']:
+      plt.rcParams[param] = '#212946'  # bluish dark greyfor param in ['text.color', 'axes.labelcolor', 'xtick.color', 'ytick.color']:
+      plt.rcParams[param] = '0.9'  # very light greyax.grid(color='#2A3459')  # bluish dark grey, but slightly lighter than background
+
     if canvas_window.get_child():
       canvas_window.show_all()
       return
     fig = plt.figure()
     df = self.df
-    x = list(df.columns)[3]
-    y = list(df.columns)[5]
+    x = list(df.columns)[1]
+    y = list(df.columns)[1]
     fig.add_subplot().scatter(df[x], df[y])
     plt.xlabel(x)
     plt.ylabel(y)
@@ -101,6 +154,7 @@ class MyApp:
 
 
   def on_plot_close(self, widget, event):
+    print("on_plot_close")
     return self.builder.get_object("plot1").hide_on_delete()
 
   def on_destroy(self, event):

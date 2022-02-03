@@ -20,7 +20,7 @@ class MyApp:
 
   def on_open_dialog(self, widget):
     dialog = self.builder.get_object("open_file_dialog")
-    response = dialog.run
+    response = dialog.run()
     if response == Gtk.ResponseType.OK:
       print("ok btn")
       filename = dialog.get_filename()

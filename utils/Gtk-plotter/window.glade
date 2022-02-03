@@ -3,6 +3,7 @@
 <interface>
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkAboutDialog" id="About_window">
+    <property name="name">About_window</property>
     <property name="can-focus">False</property>
     <property name="type-hint">dialog</property>
     <property name="program-name">Glade</property>
@@ -147,12 +148,11 @@
         <property name="subtitle" translatable="yes">Üks katsetus</property>
         <property name="show-close-button">True</property>
         <child>
-          <object class="GtkButton" id="menu_btn">
-            <property name="name">Menu</property>
+          <object class="GtkMenuButton" id="menu_btn">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
+            <property name="focus-on-click">False</property>
             <property name="receives-default">True</property>
-            <signal name="pressed" handler="menu_btn_pressed" swapped="no"/>
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>
@@ -192,14 +192,16 @@
   </object>
   <object class="GtkFileChooserDialog" id="open_file_dialog">
     <property name="can-focus">False</property>
-    <property name="title" translatable="yes">Select file</property>
     <property name="type-hint">dialog</property>
     <property name="transient-for">JuunWindow</property>
+    <property name="create-folders">False</property>
+    <signal name="delete-event" handler="on_close_dialog" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
+        <property name="baseline-position">bottom</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
             <property name="can-focus">False</property>
